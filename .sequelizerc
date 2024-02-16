@@ -1,5 +1,9 @@
 const path = require('path');
 
+/**
+ *  By specifing this path will generate folders/files at that location while migrating the tables.
+ */
+
 module.exports = {
   'config': path.resolve('config', 'config.json'),
   'models-path': path.resolve('models'),

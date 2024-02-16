@@ -1,16 +1,17 @@
 import { Request, Response } from 'express';
-import {db} from '../models/index.js';
-// const { Product } = require('../models')
+import { Sequelize, sequelize } from '../models/index.js';
+import { Product } from "../models/product.js";
 
-// import {Product} from '../models';
-// import  {Product}  from '../models/product.js'; 
-// const Product = require('../models/product.js');
+const product = new Product(sequelize, Sequelize);
+
 
 const createProduct = async (req: Request, res: Response): Promise<Response> => {
   try {
-    const { productName, productPrice, productRating, description } = req.body;    
+    const { productName, productPrice, productRating, description } = req.body;   
+    console.log("req.body", req.body);
+     
 
-    const newProduct = await db.Product.create({
+    const newProduct = await product.create({
       productName,
       productPrice,
       productRating,
