@@ -69,8 +69,6 @@ const deleteProduct = async (
     const productId = req.params.id;
     const deletedProduct = await Product.destroy({ where: { id: productId } });
 
-    console.log("deletedProduct", deletedProduct);
-
     return res.status(200).send({ message: "product deleted successfully." });
   } catch (error) {
     return res
@@ -85,7 +83,7 @@ const searchProducts = async (
 ): Promise<Response> => {
   try {
     const searchTerm = req.query.searchTerm;
-    const products = await Product.findAll({
+    const { rows, count } = await Product.findAndCountAll({
       where: {
         [Op.or]: [
           { productName: { [Op.like]: `%${searchTerm}%` } },
@@ -93,7 +91,7 @@ const searchProducts = async (
         ],
       },
     });
-    return res.status(200).send({ products });
+    return res.status(200).send({ rows, totalSearchCount: count });
   } catch (error) {
     console.error("Error searching products:", error);
     throw error;
