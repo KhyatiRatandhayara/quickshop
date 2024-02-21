@@ -9,12 +9,13 @@ const createProduct = async (
   res: Response
 ): Promise<Response> => {
   try {
-    const { productName, productPrice, productRating, description } = req.body;
+    const { productName, productPrice, productRating, description, userId } = req.body;
     const newProduct = await Product.create({
       productName,
       productPrice,
       productRating,
       description,
+      userId
     });
     if (newProduct) {
       return res
