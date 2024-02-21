@@ -2,11 +2,12 @@ import { sequelize } from './index.js';
 import { DataTypes, Model, Optional } from 'sequelize';
 
 interface ProductAttributes {
-  id: string
+  id: number
   productName: string,
   productPrice: number,
   productRating: number,
-  description: string
+  description: string;
+  userId: string
 };
 
 interface ProductCreationAttributes extends Optional<ProductAttributes, 'id'> { }
@@ -26,7 +27,17 @@ const Product = sequelize.define<ProductInstance>(
     productName: DataTypes.STRING,
     productPrice: DataTypes.FLOAT,
     productRating: DataTypes.FLOAT,
-    description: DataTypes.STRING
+    description: DataTypes.STRING,
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'Users', // <<< Note, its table's name, not object name
+        key: 'id' // <<< Note, its a column name
+      },
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE' // record in the parent table (the table being referenced by the foreign key) is deleted, the corresponding records in the child table (the table containing the foreign key) will also be automatically deleted.
+    },
   }
 )
 export default Product;

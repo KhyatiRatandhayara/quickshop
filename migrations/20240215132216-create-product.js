@@ -22,6 +22,19 @@ module.exports = {
       description: {
         type: Sequelize.STRING
       },
+      userId: {
+        type: Sequelize.DataTypes.INTEGER,
+        references: {
+          model: {
+            tableName: 'Users',
+            schema: 'schema'
+          },
+          key: 'id'
+        },
+        allowNull: false,
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

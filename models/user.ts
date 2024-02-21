@@ -4,7 +4,7 @@ import * as bcrypt from 'bcrypt';
 
 const saltRounds = 10;
 interface UserAttributes {
-  id: string;
+  id: number;
   firstName: string;
   lastName: string;
   email: string;
