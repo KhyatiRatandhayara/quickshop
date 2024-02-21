@@ -1,12 +1,14 @@
 import { sequelize } from './index.js';
 import { DataTypes, Model, Optional } from 'sequelize';
+import * as bcrypt from 'bcrypt'; 
 
-
+const saltRounds = 10;
 interface UserAttributes {
   id: string;
   firstName: string;
   lastName: string;
   email: string;
+  password: string
 };
 
 interface UserCreationAttributes extends Optional<UserAttributes, 'id'> { }
@@ -22,7 +24,7 @@ const User = sequelize.define<UserInstance>(
   {
     id: {
       allowNull: false,
-      autoIncrement: false,
+      autoIncrement: true,
       primaryKey: true,
       type: DataTypes.UUID,
       unique: true,
@@ -39,7 +41,19 @@ const User = sequelize.define<UserInstance>(
       allowNull: true,
       type: DataTypes.TEXT,
     },
+    password: {
+      allowNull: false,
+      type: DataTypes.TEXT
+    }
+  },{
+    hooks: {
+      beforeCreate: async (user, options) => {
+       const hashedPassword = await bcrypt.hash(user.password, saltRounds);
+       user.password = hashedPassword;
+      }
+    }
   }
+ 
 );
 
 export default User;

@@ -1,9 +1,8 @@
 import { Request, Response } from "express";
-import { Sequelize, sequelize } from "../models/index.js";
-import Product, { ProductInstance } from "../models/product.js";
+import Product from "../models/product.js";
 import { Op } from "sequelize";
+import { AuthenticatedRequest } from "../helpers/user-types.js";
 
-// const product = new Product(sequelize, Sequelize);
 
 const createProduct = async (
   req: Request,
@@ -23,14 +22,14 @@ const createProduct = async (
         .send({ message: "Product Created Successfully", newProduct });
     }
   } catch (error) {
-    return res.status(500).send({
+    return res.status(error.status).send({
       error: error.message,
     });
   }
 };
 
 const getAllProducts = async (
-  req: Request,
+  req: AuthenticatedRequest,
   res: Response
 ): Promise<Response> => {
   try {
@@ -40,7 +39,7 @@ const getAllProducts = async (
       .send({ allProducts, totalCount: allProducts.length });
   } catch (error) {
     return res
-      .status(500)
+      .status(error.status)
       .send({ message: "Some error occurred while retrieving products" });
   }
 };
@@ -56,7 +55,7 @@ const editProduct = async (req: Request, res: Response): Promise<Response> => {
     return res.send(200).json(updatedProduct);
   } catch (error) {
     return res
-      .status(500)
+      .status(error.status)
       .send({ message: "Some error occurred while updating products" });
   }
 };
@@ -67,12 +66,12 @@ const deleteProduct = async (
 ): Promise<Response> => {
   try {
     const productId = req.params.id;
-    const deletedProduct = await Product.destroy({ where: { id: productId } });
+    await Product.destroy({ where: { id: productId } });
 
     return res.status(200).send({ message: "product deleted successfully." });
   } catch (error) {
     return res
-      .status(500)
+      .status(error.status)
       .send({ message: "Some error occurred while deleting products" });
   }
 };
@@ -93,8 +92,9 @@ const searchProducts = async (
     });
     return res.status(200).send({ rows, totalSearchCount: count });
   } catch (error) {
-    console.error("Error searching products:", error);
-    throw error;
+    return res
+      .status(error.status)
+      .send({ message: "Error searching products:" });
   }
 };
 
