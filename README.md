@@ -14,3 +14,10 @@ npx sequelize-cli model:generate --name User --attributes firstName:string,lastN
 npx sequelize-cli model:generate --name Product --attributes productName:string,productPrice:float,productRating:float,description:string
 
 npx sequelize-cli db:migrate
+
+//how env file loads in the application, so it will take automatically
+Default: path.resolve(process.cwd(), '.env')
+
+
+//Joi validation
+reference: https://dev.to/jeffsalive/the-right-way-to-use-joi-validator-in-your-nodejs-express-application-147g
