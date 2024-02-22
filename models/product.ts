@@ -44,6 +44,6 @@ const Product = sequelize.define<ProductInstance>(
 
 // Establishing the one-to-many association
 Product.belongsTo(User, { foreignKey: 'userId' });
-User.hasMany(Product);
+User.hasMany(Product, { foreignKey: 'userId' });
 
 export default Product;
