@@ -1,5 +1,6 @@
 import { sequelize } from './index.js';
 import { DataTypes, Model, Optional } from 'sequelize';
+import User from './user.js';
 
 interface ProductAttributes {
   id: number
@@ -40,4 +41,9 @@ const Product = sequelize.define<ProductInstance>(
     },
   }
 )
+
+// Establishing the one-to-many association
+Product.belongsTo(User, { foreignKey: 'userId' });
+User.hasMany(Product);
+
 export default Product;

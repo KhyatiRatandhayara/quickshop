@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import Product from "../models/product.js";
 import { Op } from "sequelize";
 import { AuthenticatedRequest } from "../helpers/user-types.js";
+import User from "../models/user.js";
 
 
 const createProduct = async (
@@ -23,7 +24,8 @@ const createProduct = async (
         .send({ message: "Product Created Successfully", newProduct });
     }
   } catch (error) {
-    return res.status(error.status).send({
+    return res.status(500).send({
+      message: "error while inserting the product",
       error: error.message,
     });
   }
@@ -40,8 +42,8 @@ const getAllProducts = async (
       .send({ allProducts, totalCount: allProducts.length });
   } catch (error) {
     return res
-      .status(error.status)
-      .send({ message: "Some error occurred while retrieving products" });
+      .status(500)
+      .send({ error: "Some error occurred while retrieving products", message: error.message });
   }
 };
 
@@ -56,8 +58,8 @@ const editProduct = async (req: Request, res: Response): Promise<Response> => {
     return res.send(200).json(updatedProduct);
   } catch (error) {
     return res
-      .status(error.status)
-      .send({ message: "Some error occurred while updating products" });
+      .status(500)
+      .send({ error: "Some error occurred while updating products", message: error.message });
   }
 };
 
@@ -72,8 +74,8 @@ const deleteProduct = async (
     return res.status(200).send({ message: "product deleted successfully." });
   } catch (error) {
     return res
-      .status(error.status)
-      .send({ message: "Some error occurred while deleting products" });
+      .status(500)
+      .send({ error: "Some error occurred while deleting products", message: error.message });
   }
 };
 
@@ -94,8 +96,25 @@ const searchProducts = async (
     return res.status(200).send({ rows, totalSearchCount: count });
   } catch (error) {
     return res
-      .status(error.status)
-      .send({ message: "Error searching products:" });
+      .status(500)
+      .send({ error: "Error searching products:", message: error.message });
+  }
+};
+
+const userProducts = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  try {
+   const userProductData = await User.findAll({
+      include: [Product]
+    })
+    return res.status(200).send({ data: userProductData });
+  } catch (error) {
+    console.log("error", error)
+    return res
+      .status(500)
+      .send({ error: "Some error occurred while retrieving user products", message: error.message });
   }
 };
 
@@ -105,4 +124,5 @@ export {
   editProduct,
   deleteProduct,
   searchProducts,
-};
+  userProducts
+};                                                

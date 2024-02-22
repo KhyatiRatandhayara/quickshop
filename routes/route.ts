@@ -5,6 +5,7 @@ import {
   editProduct,
   deleteProduct,
   searchProducts,
+  userProducts
 } from "../controller/productController.js";
 import { signupUser, userLogin } from '../controller/userController.js'
 import { productValidator } from '../helpers/validation.js'
@@ -17,13 +18,15 @@ const router = express.Router();
 
 router.get(ProductURL.GET_ALL_PRODUCTS, verifyToken, getAllProducts);
 
-router.post(ProductURL.CREATE_PRODUCT, productValidator, createProduct);
+router.post(ProductURL.CREATE_PRODUCT, verifyToken, productValidator, createProduct);
 
-router.patch(ProductURL.EDIT_PRODUCT, editProduct);
+router.patch(ProductURL.EDIT_PRODUCT, verifyToken, editProduct);
 
-router.delete(ProductURL.DELETE_PRODUCT, deleteProduct);
+router.delete(ProductURL.DELETE_PRODUCT, verifyToken, deleteProduct);
 
-router.get(ProductURL.SEARCH_PRODUCT, searchProducts);
+router.get(ProductURL.SEARCH_PRODUCT, verifyToken, searchProducts);
+
+router.get(ProductURL.USER_PRODUCTS, verifyToken, userProducts);
 
 router.post(UserURL.CREATE_USER, checkUsernameOrEmailExist, signupUser);
 
