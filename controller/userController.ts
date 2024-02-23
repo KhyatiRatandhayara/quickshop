@@ -1,7 +1,12 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import * as bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import User from "../models/user.js";
+import authToken from "../models/authtoken.js";
+
+interface CustomRequest extends Request {
+    newAccessToken?: string;
+}
 
 const signupUser = async (
     req: Request,
@@ -16,12 +21,12 @@ const signupUser = async (
             password
         });
         if (newUser) {
-        return res
-            .status(201)
-            .send({ message: "User registered successfully", newUser });
+            return res
+                .status(201)
+                .send({ message: "User registered successfully", newUser });
         }
     } catch (error) {
-        return res.status(error.status).send({
+        return res.status(500).send({
             error: error.message,
         });
     }
@@ -38,13 +43,61 @@ const userLogin = async (req: Request, res: Response): Promise<Response> => {
         if (!passwordMatch) {
             return res.status(401).json({ error: 'Authentication failed, password doesnt match.' });
         }
-        const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET_KEY, {
-            expiresIn: '1h',
+        // Generate JWT with short expiration time
+        const accessToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET_KEY, {
+            expiresIn: process.env.JWT_EXPIRATION,
         });
-        res.status(200).json({ message: 'User Logged In!', token });
+        // Creating refresh token not that expiry of refresh token is greater than the access token 
+        let refreshToken = await authToken.prototype.createToken(user);
+        // Assigning refresh token in http-only cookie 
+        res.cookie('jwt', refreshToken, {
+            httpOnly: true, // An http-only cookie cannot be accessed by client-side APIs 
+            sameSite: 'none',
+            secure: true,
+            maxAge: 24 * 60 * 60 * 1000
+        });
+        const { password: userPassword, ...userData } = user.dataValues;
+
+        res.status(200).json({ message: 'User Logged In!', user: { ...userData, accessToken, refreshToken } });
     } catch (error) {
-        res.status(error.status).json({ error: 'Login failed', message: error.message });
+        res.status(500).json({ error: 'Login failed', message: error.message });
     }
 }
 
-export { signupUser, userLogin }
+const verifyRefreshToken = async (cookieHeader: string) => {
+    let requestToken = cookieHeader;
+    if (requestToken.startsWith('jwt=')) {
+        requestToken = requestToken.split('=')[1];
+    }
+    if (requestToken == null) {
+        return { status: 403, message: "Refresh Token is required!" };
+    }
+    try {
+        let refreshToken = await authToken.findOne({ where: { token: requestToken } });
+        if (!refreshToken) {
+            return { status: 403, message: "Invalid refresh token" };
+        }
+        if (authToken.prototype.verifyExpiration(refreshToken)) {
+            authToken.destroy({ where: { id: refreshToken.id } });
+            return { status: 403, message: "Refresh token was expired. Please make a new sign in request" };
+        }
+
+        const user = await User.findOne({
+            where: { id: refreshToken.userId },
+            attributes: {
+                exclude: ['password']
+            }
+        });
+        let newAccessToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET_KEY, {
+            expiresIn: process.env.JWT_EXPIRATION,
+        });
+
+        return { status: 200,userId: user.id, accessToken: newAccessToken, refreshToken: refreshToken.token };
+
+    } catch (err) {
+        console.log('err', err);
+        return { status: 500, error: 'Internal server error', message: err.message };
+    }
+}
+
+export { signupUser, userLogin, verifyRefreshToken }

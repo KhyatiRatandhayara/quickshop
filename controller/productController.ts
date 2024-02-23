@@ -106,8 +106,13 @@ const userProducts = async (
   res: Response
 ): Promise<Response> => {
   try {
-   const userProductData = await User.findAll({
-      include: [Product]
+    const userProductData = await User.findAll({
+      include: [{
+        model: Product,
+        attributes: {
+          exclude: ['password']
+        }
+      }]
     })
     return res.status(200).send({ data: userProductData });
   } catch (error) {

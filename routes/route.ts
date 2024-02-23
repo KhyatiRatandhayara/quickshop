@@ -7,7 +7,7 @@ import {
   searchProducts,
   userProducts
 } from "../controller/productController.js";
-import { signupUser, userLogin } from '../controller/userController.js'
+import { verifyRefreshToken, signupUser, userLogin } from '../controller/userController.js'
 import { productValidator } from '../helpers/validation.js'
 import { ProductURL } from '../helpers/product-types.js'
 import { UserURL } from '../helpers/user-types.js';
@@ -31,5 +31,7 @@ router.get(ProductURL.USER_PRODUCTS, verifyToken, userProducts);
 router.post(UserURL.CREATE_USER, checkUsernameOrEmailExist, signupUser);
 
 router.post(UserURL.LOGIN, userLogin);
+
+router.post(UserURL.CREATE_REFRESH_TOKEN, verifyRefreshToken);
 
 export default router;
