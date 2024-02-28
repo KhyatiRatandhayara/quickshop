@@ -3,12 +3,13 @@ import { DataTypes, Model, Optional } from 'sequelize';
 import User from './user.js';
 
 interface ProductAttributes {
-  id: number
-  productName: string,
-  productPrice: number,
-  productRating: number,
-  description: string;
-  userId: string
+  id: number;
+  productName: string;
+  productPrice: number;
+  productRating: number;
+  productImage: Buffer;                                    
+  description: string;                                                                            
+  userId: string;
 };
 
 interface ProductCreationAttributes extends Optional<ProductAttributes, 'id'> { }
@@ -28,6 +29,7 @@ const Product = sequelize.define<ProductInstance>(
     productName: DataTypes.STRING,
     productPrice: DataTypes.FLOAT,
     productRating: DataTypes.FLOAT,
+    productImage: DataTypes.BLOB,
     description: DataTypes.STRING,
     userId: {
       type: DataTypes.INTEGER,
