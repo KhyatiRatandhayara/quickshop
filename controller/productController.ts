@@ -79,12 +79,24 @@ const deleteProduct = async (
   }
 };
 
+/**
+ * 
+ * @param req 
+ * @param res 
+ * @returns number records for the product
+ */
+
 const searchProducts = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
   try {
     const searchTerm = req.query.searchTerm;
+    const currentPage = req.query.currentPage ? parseInt(req.query.currentPage as string) : 1;
+    const limit = 10; //perPage
+
+    const offset = (currentPage - 1) * limit; // number of records that should be skipped from the beginning of the result set before returning rows.
+
     const { rows, count } = await Product.findAndCountAll({
       where: {
         [Op.or]: [
@@ -92,8 +104,16 @@ const searchProducts = async (
           { description: { [Op.like]: `%${searchTerm}%` } },
         ],
       },
+      offset: offset,
+      limit: limit,
     });
-    return res.status(200).send({ rows, totalSearchCount: count });
+
+    const totalPages = Math.ceil(count / limit);
+
+    return res.status(200).send({
+      rows, totalSearchCount: count, totalPages: totalPages,
+      currentPage
+    });
   } catch (error) {
     return res
       .status(500)
