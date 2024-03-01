@@ -4,13 +4,9 @@ import { Op } from "sequelize";
 import { AuthenticatedRequest } from "../helpers/user-types.js";
 import User from "../models/user.js";
 import multer from "multer";
-// import path from "path";
 
 const multerStorage = multer.diskStorage({
   destination: (req, file, cb) => {
-    console.log("req destination", req)
-      // const destinationPath = path.resolve(__dirname, '..', 'public'); // Resolve destination path
-      // cb(null, destinationPath);
       cb(null, "public");
   },
   filename: (req, file, cb) => {
@@ -22,7 +18,6 @@ const multerStorage = multer.diskStorage({
 });
 
 const multerFilter = (req, file, cb) => {
-  console.log("req multerFilter", req)
   if(!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
       return cb( new Error('Please upload a valid image file'), false)
       } else {
@@ -30,10 +25,10 @@ const multerFilter = (req, file, cb) => {
       }
 };
 
-export const uploadFile =   multer({
+export const uploadFile = multer({
   storage: multerStorage,
   limits: {
-      fileSize: 3 * 1024 * 1024, //max 3MB file upload
+    fileSize: 3 * 1024 * 1024, //max 3MB file upload, if it exceeds the limit it will throw the multer error, needs to handlw that
   },
   fileFilter: multerFilter,
 });

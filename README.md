@@ -37,3 +37,6 @@ file structure especially the sequelize migration folders
 https://medium.com/@kizito917/jwt-refresh-token-implementation-with-node-js-postgres-and-sequelize-106ef6b3de68#:~:text=js%2C%20Postgres%20and%20Sequelize,-amaechi%20kingsley&text=To%20have%20a%20secure%20and,with%20JWT%2C%20Postgres%20and%20Sequelize.
 
 
+//cookie reference guide: https://dev.to/costamatheus97/battle-of-the-cookies-regular-cookies-vs-http-only-1n0a
+
+

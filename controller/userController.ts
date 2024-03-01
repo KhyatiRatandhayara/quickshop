@@ -50,6 +50,12 @@ const userLogin = async (req: Request, res: Response): Promise<Response> => {
         // Creating refresh token not that expiry of refresh token is greater than the access token 
         let refreshToken = await authToken.prototype.createToken(user);
         // Assigning refresh token in http-only cookie 
+
+        /**
+         * HTTP-only cookies are stored in the same location as regular cookies, which is typically the browser's cookie storage. However, since HTTP-only cookies cannot be accessed by client-side scripts, they are not accessible via JavaScript or other client-side programming languages. Instead, they are only sent to the server with each HTTP request.
+         * 
+         * This flag indicates to the browser that the cookie cannot be accessed via client-side scripts like JavaScript, making it more secure against certain types of attacks like XSS.
+         */
         res.cookie('jwt', refreshToken, {
             httpOnly: true, // An http-only cookie cannot be accessed by client-side APIs 
             sameSite: 'none',
@@ -92,7 +98,7 @@ const verifyRefreshToken = async (cookieHeader: string) => {
             expiresIn: process.env.JWT_EXPIRATION,
         });
 
-        return { status: 200,userId: user.id, accessToken: newAccessToken, refreshToken: refreshToken.token };
+        return { status: 200, userId: user.id, accessToken: newAccessToken, refreshToken: refreshToken.token };
 
     } catch (err) {
         console.log('err', err);

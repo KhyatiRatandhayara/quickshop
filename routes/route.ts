@@ -15,12 +15,13 @@ import { UserURL } from '../helpers/user-types.js';
 import { checkUsernameOrEmailExist } from '../middleware/verifySignup.js';
 import { verifyToken } from '../middleware/authMiddleware.js';
 import invalidUrl from '../controller/commonController.js'
+// import { productImageUpload } from '../middleware/productUpload.js'
 
 const router = express.Router();
 
 router.get(ProductURL.GET_ALL_PRODUCTS, verifyToken, getAllProducts);
 
-router.post(ProductURL.CREATE_PRODUCT, uploadFile.single('productImage'), createProduct);
+router.post(ProductURL.CREATE_PRODUCT, verifyToken, uploadFile.single('productImage'), createProduct);
 
 router.patch(ProductURL.EDIT_PRODUCT, verifyToken, editProduct);
 
