@@ -48,9 +48,6 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test(\"Successful POST request\", function () {",
-							"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
-							"});",
 							""
 						],
 						"type": "text/javascript"
@@ -61,13 +58,39 @@
 				"method": "POST",
 				"header": [],
 				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"productName\": \"ikigai new version\",\n    \"productPrice\": 500,\n    \"productRating\": 5,\n    \"description\": \"ikigai new version description\",\n    \"userId\": 1\n}",
-					"options": {
-						"raw": {
-							"language": "json"
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "productName",
+							"value": "new book",
+							"type": "text"
+						},
+						{
+							"key": "productPrice",
+							"value": "10000",
+							"type": "text"
+						},
+						{
+							"key": "productRating",
+							"value": "5",
+							"type": "text"
+						},
+						{
+							"key": "productImage",
+							"type": "file",
+							"src": "/C:/Users/khyati.r/Pictures/Screenshots/Screenshot_20230201_024031.png"
+						},
+						{
+							"key": "description",
+							"value": "new book",
+							"type": "text"
+						},
+						{
+							"key": "userId",
+							"value": "1",
+							"type": "text"
 						}
-					}
+					]
 				},
 				"url": "{{base_url}}products",
 				"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
@@ -147,7 +170,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"firstName\": \"user2\",\r\n    \"lastName\": \"user2 lastName\",\r\n    \"email\": \"user2@gmail.com\",\r\n    \"password\": \"asd@1234\"\r\n}",
+					"raw": "{\r\n    \"firstName\": \"user4\",\r\n    \"lastName\": \"user4 lastName\",\r\n    \"email\": \"user4@gmail.com\",\r\n    \"password\": \"asd@1234\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -178,10 +201,55 @@
 		},
 		{
 			"name": "userProducts",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": "{{base_url}}user-products"
+			},
+			"response": []
+		},
+		{
+			"name": "user-products",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "{{base_url}}user-products"
+			},
+			"response": []
+		},
+		{
+			"name": "serach-product",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}serach-product?searchTerm=wing&currentPage=1",
+					"host": [
+						"{{base_url}}serach-product"
+					],
+					"query": [
+						{
+							"key": "searchTerm",
+							"value": "wing"
+						},
+						{
+							"key": "currentPage",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "logout",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "{{base_url}}logout"
 			},
 			"response": []
 		}
@@ -189,7 +257,7 @@
 	"auth": {
 		"type": "bearer",
 		"bearer": {
-			"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTcwODY2MzkxNCwiZXhwIjoxNzA4NjY3NTE0fQ.Q1R5yLzXlNQrxabh4HKb4QGI-qgr2YNBSJGqMN--rsY"
+			"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTcwOTA5ODgxNCwiZXhwIjoxNzA5MDk4ODc0fQ.V3y1uyHxkSoLqNgFsIf4ElicIzmb8up-0DdTvMkmoa0"
 		}
 	},
 	"event": [

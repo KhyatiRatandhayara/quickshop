@@ -50,7 +50,7 @@ const userLogin = async (req: Request, res: Response): Promise<Response> => {
         // Creating refresh token not that expiry of refresh token is greater than the access token 
         let refreshToken = await authToken.prototype.createToken(user);
         // Assigning refresh token in http-only cookie 
-        res.cookie('jwt', refreshToken, {
+        res.cookie('refreshToken', refreshToken, {
             httpOnly: true, // An http-only cookie cannot be accessed by client-side APIs 
             sameSite: 'none',
             secure: true,
@@ -65,14 +65,14 @@ const userLogin = async (req: Request, res: Response): Promise<Response> => {
 }
 
 const verifyRefreshToken = async (cookieHeader: string) => {
-    let requestToken = cookieHeader;
-    if (requestToken.startsWith('jwt=')) {
-        requestToken = requestToken.split('=')[1];
-    }
-    if (requestToken == null) {
-        return { status: 403, message: "Refresh Token is required!" };
-    }
     try {
+        let requestToken = cookieHeader;
+        if (requestToken.startsWith('refreshToken=')) {
+            requestToken = requestToken.split('=')[1];
+        }
+        if (requestToken == null) {
+            return { status: 403, message: "Refresh Token is required!" };
+        }
         let refreshToken = await authToken.findOne({ where: { token: requestToken } });
         if (!refreshToken) {
             return { status: 403, message: "Invalid refresh token" };
@@ -92,7 +92,7 @@ const verifyRefreshToken = async (cookieHeader: string) => {
             expiresIn: process.env.JWT_EXPIRATION,
         });
 
-        return { status: 200,userId: user.id, accessToken: newAccessToken, refreshToken: refreshToken.token };
+        return { status: 200, userId: user.id, accessToken: newAccessToken, refreshToken: refreshToken.token };
 
     } catch (err) {
         console.log('err', err);
@@ -100,4 +100,42 @@ const verifyRefreshToken = async (cookieHeader: string) => {
     }
 }
 
-export { signupUser, userLogin, verifyRefreshToken }
+
+const userLogout = async (req: Request, res: Response): Promise<Response> => {
+
+    try {
+        const cookies = req.headers.cookie ? Object.fromEntries(req.headers.cookie.split(';').map(cookie => cookie.trim().split('='))) : {};
+
+        if (!cookies['refreshToken']) {
+            return res.status(500).send({ message: "No Refresh Token in Cookies" });
+        }
+        const refreshToken = cookies['refreshToken'];
+        const user = await authToken.findOne({ where: { token: refreshToken } });
+        if (!user) {
+            res.clearCookie("refreshToken", {
+                httpOnly: true,
+                sameSite: 'none',
+                secure: true,
+            });
+            return res.sendStatus(204); // no_content, server successfully processes the request, but there is no content to return to the client
+        }
+        await authToken.update(
+            { token: '' },
+            { where: { userId: user.userId } }
+        )
+        res.clearCookie("refreshToken", {
+            httpOnly: true,
+            sameSite: 'none',
+            secure: true,
+        });
+        res.sendStatus(204); // no_content
+
+    } catch (error) {
+        console.log('err', error);
+        res.status(500).json({ error: 'logout failed', message: error.message });
+    }
+
+
+}
+
+export { signupUser, userLogin, verifyRefreshToken, userLogout }
