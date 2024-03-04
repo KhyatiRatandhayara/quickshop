@@ -4,7 +4,7 @@ dotenv.config();
 
 import router from '../routes/route.js'
 
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 5000;
 const app = express();
 
 // parse requests of content-type - application/json
