@@ -46,12 +46,24 @@
 
 import { Sequelize } from 'sequelize';
 const env = process.env.NODE_ENV || 'development';
-import configJson from '../config/config.json' assert { type: "json" };
+import dbConfig from '../config/config.js';
+const config = dbConfig[env];
 
-const config = configJson[env];
-
-const  sequelize = config.url
+const sequelize = config.url
   ? new Sequelize(config.url, config)
   : new Sequelize(config.database, config.username, config.password, config);
+
+
+sequelize.sync();
+
+(async () => {
+  try {
+    await sequelize.authenticate();
+    console.log("Database connection setup successfully!");
+  } catch (error) {
+    console.log("Unable to connect to the database", error);
+  }
+})();
+
 
 export { Sequelize, sequelize };

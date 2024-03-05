@@ -22,7 +22,7 @@ const Product = sequelize.define<ProductInstance>(
     id: {
       autoIncrement: true,
       primaryKey: true,
-      type: DataTypes.UUID,
+      type: DataTypes.INTEGER,
       unique: true,
     },
     productName: DataTypes.STRING,

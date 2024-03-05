@@ -26,7 +26,7 @@ const User = sequelize.define<UserInstance>(
       allowNull: false,
       autoIncrement: true,
       primaryKey: true,
-      type: DataTypes.UUID,
+      type: DataTypes.INTEGER,
       unique: true,
     },
     firstName: {

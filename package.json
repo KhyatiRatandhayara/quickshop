@@ -6,6 +6,7 @@
   "main": "dist/src/server.js",
   "scripts": {
     "start": "tsc && nodemon dist/src/server.js",
+    "migrate": "npx sequelize-cli db:migrate",
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
